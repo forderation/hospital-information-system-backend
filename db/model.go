@@ -19,6 +19,8 @@ type Registrant struct {
 	UserID              uint
 	DoctorAppointmentID uint
 	IsCanceled          bool
+	User User `gorm:"foreignKey:UserID"`
+	DoctorAppointment DoctorAppointment `gorm:"foreignKey:DoctorAppointmentID"`
 }
 
 type DoctorAppointment struct {

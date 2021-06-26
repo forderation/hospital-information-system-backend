@@ -28,21 +28,21 @@ func ConnectMysql(config Config) *DB {
 		"%s:%s@tcp(%s:%s)/%s?charset=utf8mb4&parseTime=True&loc=Local",
 		config.User, config.Password, config.Host, config.Port, config.DBName,
 	)
-	loggerDb := logger.New(
-		log.New(os.Stdout, "\r\n", log.LstdFlags), // io writer
-		logger.Config{
-			SlowThreshold:             time.Second, // Slow SQL threshold
-			LogLevel:                  logger.Info, // Log level
-			IgnoreRecordNotFoundError: true,        // Ignore ErrRecordNotFound error for logger
-			Colorful:                  false,       // Disable color
-		},
-	)
 	gormConfig := &gorm.Config{
 		NamingStrategy: schema.NamingStrategy{
 			SingularTable: true,
 		},
 	}
 	if os.Getenv("USING_LOG") == "true" {
+		loggerDb := logger.New(
+			log.New(os.Stdout, "\r\n", log.LstdFlags),
+			logger.Config{
+				SlowThreshold:             time.Second,
+				LogLevel:                  logger.Info,
+				IgnoreRecordNotFoundError: true,
+				Colorful:                  false,
+			},
+		)
 		gormConfig.Logger = loggerDb
 	}
 	db, err := gorm.Open(mysql.Open(dsn), gormConfig)

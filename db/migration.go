@@ -28,11 +28,11 @@ func (database *DB) CreatorConstraint(constraint interface{}, constraintName str
 
 func Migrate(database *DB)  {
 	database.CreatorTable(&User{}, "user")
-	database.CreatorTable(&Registrant{}, "registrant")
 	database.CreatorTable(&DoctorAppointment{}, "doctor_appointment")
-	database.CreatorConstraint(&User{}, "Registrant")
-	database.CreatorConstraint(&User{}, "fk_users_registrant")
-	database.CreatorConstraint(&DoctorAppointment{}, "Registrant")
-	database.CreatorConstraint(&DoctorAppointment{}, "fk_doctor_appointments_registrant")
+	database.CreatorTable(&Registrant{}, "registrant")
+	//database.CreatorConstraint(&User{}, "UserRegistrants")
+	//database.CreatorConstraint(&User{}, "fk_users_registrant")
+	//database.CreatorConstraint(&DoctorAppointment{}, "DoctorRegistrants")
+	//database.CreatorConstraint(&DoctorAppointment{}, "fk_doctor_appointments_registrant")
 	log.Printf("Migration did run successfully")
 }

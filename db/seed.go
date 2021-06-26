@@ -22,7 +22,7 @@ func SeedUser(db *DB, userLen int) {
 			Password:  fmt.Sprintf("%x", h.Sum(nil)),
 			IsAdmin:   true,
 		}
-		err := db.CreateUser(&user)
+		err := db.DB.Create(&user).Error
 		if err != nil {
 			log.Fatalf("Could not create foreign key: %v", err.Error())
 		}
