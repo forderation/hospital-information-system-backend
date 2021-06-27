@@ -19,7 +19,7 @@ func GetDoctor(dbc *gorm.DB, doctorGet *db.DoctorAppointment) (doctors []db.Doct
 }
 
 func GetDoctorsById(dbc *gorm.DB, ids []uint) (doctors []db.DoctorAppointment, err error) {
-	err = dbc.Find(&doctors, ids).Error
+	err = dbc.Preload("Registrants").Find(&doctors, ids).Error
 	return
 }
 

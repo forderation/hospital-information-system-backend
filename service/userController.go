@@ -5,6 +5,7 @@ import (
 	"github.com/forderation/hospital-information-system/repository"
 	"github.com/forderation/hospital-information-system/util"
 	"github.com/gin-gonic/gin"
+	"strconv"
 )
 
 type RequestListRegistrant struct {
@@ -69,6 +70,20 @@ func AddRegistrant(c *gin.Context) {
 		NotFoundResponse("Doctor appointment id not found", c)
 		return
 	}
+	lenActiveRegistrant := 0
+	doctor := doctors[0]
+	for _, v := range doctor.Registrants {
+		if !v.IsCanceled {
+			lenActiveRegistrant++
+		}
+		if lenActiveRegistrant >= int(doctor.MaxRegistrant) {
+			NotAllowedResponse(
+				"Cannot apply, registrants are full. Please submit another time",
+				c,
+			)
+			return
+		}
+	}
 	registrant, err := repository.CreateRegistrant(DB, request.UserId, request.DoctorAppointmentId)
 	if err != nil {
 		InternalServerErrorResponse(err, c)
@@ -85,7 +100,7 @@ type RequestCancelAppointment struct {
 	ID uint `json:"id" validate:"required"`
 }
 
-func CancelAppointmentRegistrant(c *gin.Context) {
+func CancelRegistrant(c *gin.Context) {
 	var request RequestCancelAppointment
 	messageOK := "Cancel registrant are successfully"
 	err := util.BindAndValidateRequest(&request, c)
@@ -111,6 +126,25 @@ func CancelAppointmentRegistrant(c *gin.Context) {
 	StandardResponse(Response{
 		Message: messageOK,
 		Data:    registrants[0],
+	}, c)
+	return
+}
+
+func GetUser(c *gin.Context) {
+	messageOk := "Get user are successfully"
+	id, _ := strconv.ParseUint(c.Param("id"), 10, 64)
+	users, err := repository.GetUsersById(DB, []uint{uint(id)})
+	if err != nil {
+		InternalServerErrorResponse(err, c)
+		return
+	}
+	if len(users) < 1 {
+		NotFoundResponse("User are not found", c)
+		return
+	}
+	StandardResponse(Response{
+		Message: messageOk,
+		Data:    users[0],
 	}, c)
 	return
 }

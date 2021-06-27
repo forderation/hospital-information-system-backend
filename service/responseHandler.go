@@ -36,6 +36,14 @@ func UnauthorizedResponse(err error, c *gin.Context) {
 	})
 }
 
+func NotAllowedResponse(notAllowedMessage string, c *gin.Context){
+	c.JSON(http.StatusMethodNotAllowed, gin.H{
+		"Code":    "REQUEST-NOT-ALLOWED",
+		"Message": notAllowedMessage,
+		"Data":    nil,
+	})
+}
+
 func InvalidRequestResponse(invalidMessage string, c *gin.Context) {
 	c.JSON(http.StatusBadRequest, gin.H{
 		"Code":    "INVALID-REQUEST",

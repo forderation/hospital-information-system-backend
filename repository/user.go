@@ -40,7 +40,7 @@ func GetUser(dbc *gorm.DB, filter db.User) (users []db.User, err error) {
 }
 
 func GetUsersById(dbc *gorm.DB, ids []uint) (users []db.User, err error) {
-	err = dbc.Find(&users, ids).Error
+	err = dbc.Preload("Registrants.DoctorAppointment").Preload("Registrants.User").Find(&users, ids).Error
 	return
 }
 

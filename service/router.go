@@ -30,12 +30,12 @@ func InitRoute(db *gorm.DB) *gin.Engine {
 			registrant := res.Group("/registrant")
 			{
 				registrant.GET("/", GetListRegistrant)
-				registrant.POST("/", AddRegistrant)
-				registrant.POST("/cancel", CancelAppointmentRegistrant)
+				registrant.POST("/apply", AddRegistrant)
+				registrant.POST("/cancel", CancelRegistrant)
 			}
 			user := res.Group("/user")
 			{
-				user.GET("/:id")
+				user.GET("/:id", GetUser)
 			}
 		}
 	}
