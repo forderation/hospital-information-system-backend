@@ -22,3 +22,13 @@ func GetDoctorsById(dbc *gorm.DB, ids []uint) (doctors []db.DoctorAppointment, e
 	err = dbc.Find(&doctors, ids).Error
 	return
 }
+
+func UpdateDoctor(dbc *gorm.DB, da db.DoctorAppointment) (err error) {
+	err = dbc.Model(&da).Updates(da).Error
+	return
+}
+
+func DeleteDoctor(dbc *gorm.DB, da db.DoctorAppointment) (err error) {
+	err = dbc.Delete(&da).Error
+	return
+}

@@ -11,7 +11,7 @@ import (
 func BindAndValidateRequest(request interface{}, c *gin.Context) (err error) {
 	err = c.BindJSON(&request)
 	if err != nil {
-		return errors.New("failed to binding request")
+		return errors.New("failed to binding request : " + err.Error())
 	}
 	validate := validator.New()
 	err = validate.Struct(request)

@@ -24,6 +24,8 @@ func InitRoute(db *gorm.DB) *gin.Engine {
 			{
 				doctor.GET("/", GetDoctorAppointments)
 				doctor.POST("/", AddDoctorAppointment)
+				doctor.PATCH("/:id", EditDoctorAppointment)
+				doctor.DELETE("/:id", DeleteDoctorAppointment)
 			}
 			registrant := res.Group("/registrant")
 			{
