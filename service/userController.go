@@ -80,3 +80,37 @@ func AddRegistrant(c *gin.Context) {
 	}, c)
 	return
 }
+
+type RequestCancelAppointment struct {
+	ID uint `json:"id" validate:"required"`
+}
+
+func CancelAppointmentRegistrant(c *gin.Context) {
+	var request RequestCancelAppointment
+	messageOK := "Cancel registrant are successfully"
+	err := util.BindAndValidateRequest(&request, c)
+	if err != nil {
+		InvalidRequestResponse(err.Error(), c)
+		return
+	}
+	registrants, err := repository.GetRegistrantsById(DB, []uint{request.ID})
+	if err != nil {
+		InternalServerErrorResponse(err, c)
+		return
+	}
+	if len(registrants) < 1 {
+		NotFoundResponse("Registrant are not found", c)
+		return
+	}
+	registrants[0].IsCanceled = true
+	err = repository.UpdateRegistrant(DB, registrants[0])
+	if err != nil {
+		InternalServerErrorResponse(err, c)
+		return
+	}
+	StandardResponse(Response{
+		Message: messageOK,
+		Data:    registrants[0],
+	}, c)
+	return
+}

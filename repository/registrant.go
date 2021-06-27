@@ -10,6 +10,11 @@ func GetRegistrantsWithRelation(dbc *gorm.DB, filter *db.Registrant) (registrant
 	return
 }
 
+func GetRegistrantsById(dbc *gorm.DB, id []uint) (registrants []db.Registrant, err error) {
+	err = dbc.Preload("User").Preload("DoctorAppointment").Find(&registrants, id).Error
+	return
+}
+
 func CreateRegistrant(dbc *gorm.DB, userId uint, doctorAppointmentId uint) (registrant db.Registrant, err error) {
 	registrant.DoctorAppointmentID = doctorAppointmentId
 	registrant.UserID = userId
@@ -18,5 +23,10 @@ func CreateRegistrant(dbc *gorm.DB, userId uint, doctorAppointmentId uint) (regi
 		return
 	}
 	err = dbc.Preload("User").Preload("DoctorAppointment").Find(&registrant).Error
+	return
+}
+
+func UpdateRegistrant(dbc *gorm.DB, registrant db.Registrant) (err error) {
+	err = dbc.Model(&registrant).Updates(&registrant).Error
 	return
 }
