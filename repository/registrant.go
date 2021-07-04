@@ -15,6 +15,11 @@ func GetRegistrantsById(dbc *gorm.DB, id []uint) (registrants []db.Registrant, e
 	return
 }
 
+func CountRegistrantsByDoctorId(dbc *gorm.DB, doctorIds []uint) (registrants []db.Registrant, count int64,  err error) {
+	err = dbc.Where("doctor_appointment_id IN ?", doctorIds).Find(&registrants).Count(&count).Error
+	return
+}
+
 func CreateRegistrant(dbc *gorm.DB, userId uint, doctorAppointmentId uint) (registrant db.Registrant, err error) {
 	registrant.DoctorAppointmentID = doctorAppointmentId
 	registrant.UserID = userId

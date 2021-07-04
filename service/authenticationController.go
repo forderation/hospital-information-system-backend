@@ -49,7 +49,7 @@ func Login(c *gin.Context) {
 	}
 	StandardResponse(Response{
 		Data: map[string]interface{}{
-			"Token": token,
+			"token": token,
 		},
 		Message: messageOk,
 	}, c)

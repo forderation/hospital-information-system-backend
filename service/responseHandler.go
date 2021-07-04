@@ -8,54 +8,57 @@ import (
 )
 
 type Response struct {
-	Message string
-	Data    interface{}
+	Code    string      `json:"code"`
+	Message string      `json:"message"`
+	Data    interface{} `json:"data"`
 }
 
 func StandardResponse(response Response, c *gin.Context) {
-	c.JSON(http.StatusOK, gin.H{
-		"Code":    "00",
-		"Message": response.Message,
-		"Data":    response.Data,
-	})
+	response.Code = "00"
+	c.JSON(http.StatusOK, response)
 }
 
 func InternalServerErrorResponse(err error, c *gin.Context) {
-	c.JSON(http.StatusInternalServerError, gin.H{
-		"Code":    "INTERNAL-SERVER-REQUEST",
-		"Message": "Oops there is something wrong in our server, please try again",
-		"Data":    err.Error(),
-	})
+	resp := Response{
+		Code:    "INTERNAL-SERVER-REQUEST",
+		Message: "Oops there is something wrong in our server, please try again",
+		Data:    err.Error(),
+	}
+	c.JSON(http.StatusOK, resp)
 }
 
 func UnauthorizedResponse(err error, c *gin.Context) {
-	c.JSON(http.StatusUnauthorized, gin.H{
-		"Code":    "REQUEST-UNAUTHORIZED",
-		"Message": "Request is unauthorized please login first",
-		"Data":    err.Error(),
-	})
+	resp := Response{
+		Code:    "REQUEST-UNAUTHORIZED",
+		Message: "Request is unauthorized please login first",
+		Data:    err.Error(),
+	}
+	c.JSON(http.StatusOK, resp)
 }
 
-func NotAllowedResponse(notAllowedMessage string, c *gin.Context){
-	c.JSON(http.StatusMethodNotAllowed, gin.H{
-		"Code":    "REQUEST-NOT-ALLOWED",
-		"Message": notAllowedMessage,
-		"Data":    nil,
-	})
+func NotAllowedResponse(notAllowedMessage string, c *gin.Context) {
+	resp := Response{
+		Code:    "REQUEST-NOT-ALLOWED",
+		Message: notAllowedMessage,
+		Data:    nil,
+	}
+	c.JSON(http.StatusOK, resp)
 }
 
 func InvalidRequestResponse(invalidMessage string, c *gin.Context) {
-	c.JSON(http.StatusBadRequest, gin.H{
-		"Code":    "INVALID-REQUEST",
-		"Message": fmt.Sprintf("Request is invalid: %s", invalidMessage),
-		"Data":    nil,
-	})
+	resp := Response{
+		Code:    "INVALID-REQUEST",
+		Message: fmt.Sprintf("Request is invalid: %s", invalidMessage),
+		Data:    nil,
+	}
+	c.JSON(http.StatusOK, resp)
 }
 
 func NotFoundResponse(notfoundMessage string, c *gin.Context) {
-	c.JSON(http.StatusNotFound, gin.H{
-		"Code":    "NOT-FOUND-REQUEST",
-		"Message": notfoundMessage,
-		"Data":    nil,
-	})
+	resp := Response{
+		Code:    "NOT-FOUND-REQUEST",
+		Message: notfoundMessage,
+		Data:    nil,
+	}
+	c.JSON(http.StatusOK, resp)
 }

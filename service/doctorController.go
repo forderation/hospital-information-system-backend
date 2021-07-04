@@ -6,6 +6,7 @@ import (
 	"github.com/forderation/hospital-information-system/util"
 	"github.com/gin-gonic/gin"
 	"strconv"
+	"strings"
 )
 
 type AddDoctorRequest struct {
@@ -39,20 +40,87 @@ func AddDoctorAppointment(c *gin.Context) {
 	return
 }
 
+type RespGetDoctor struct {
+	db.DoctorAppointment
+	CountRegistrant int    `json:"count_registrant"`
+	Abbreviation    string `json:"abbreviation"`
+}
+
 func GetDoctorAppointments(c *gin.Context) {
 	messageOk := "Get doctors successfully"
 	doctors, err := repository.GetDoctor(DB, &db.DoctorAppointment{})
-	if len(doctors) < 1 {
-		NotFoundResponse("Doctor appointment is empty", c)
-		return
-	}
 	if err != nil {
 		InternalServerErrorResponse(err, c)
 		return
 	}
+	if len(doctors) < 1 {
+		NotFoundResponse("Doctor appointment is empty", c)
+		return
+	}
+	var responses []RespGetDoctor
+	for _, v := range doctors {
+		abbreviation := GetAbbreviationDoctor(v.DoctorName)
+		_, count, err := repository.CountRegistrantsByDoctorId(DB, []uint{v.ID})
+		if err != nil {
+			InternalServerErrorResponse(err, c)
+			return
+		}
+		responses = append(responses, RespGetDoctor{
+			v,
+			int(count),
+			abbreviation,
+		})
+	}
 	StandardResponse(Response{
 		Message: messageOk,
-		Data:    doctors,
+		Data:    responses,
+	}, c)
+	return
+}
+
+func GetAbbreviationDoctor(name string) string {
+	splitNames := strings.Split(name, " ")
+	abbreviation := ""
+	for i := 0; i <= 1; i++ {
+		if i > (len(splitNames) - 1) {
+			abbreviation += string(splitNames[0][0])
+			continue
+		}
+		abbreviation += string(splitNames[i][0])
+	}
+	return abbreviation
+}
+
+func GetDetailDoctorAppointments(c *gin.Context) {
+	messageOk := "Get detail doctor successfully"
+	idDoctor, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		InternalServerErrorResponse(err, c)
+		return
+	}
+	doctors, err := repository.GetDetailDoctor(DB, &db.DoctorAppointment{ID: uint(idDoctor)})
+	if err != nil {
+		InternalServerErrorResponse(err, c)
+		return
+	}
+	if len(doctors) < 1 {
+		NotFoundResponse("Doctor appointment is empty", c)
+		return
+	}
+	doctor := doctors[0]
+	_, count, err := repository.CountRegistrantsByDoctorId(DB, []uint{doctor.ID})
+	if err != nil {
+		InternalServerErrorResponse(err, c)
+		return
+	}
+	response := RespGetDoctor{
+		doctor,
+		int(count),
+		GetAbbreviationDoctor(doctor.DoctorName),
+	}
+	StandardResponse(Response{
+		Message: messageOk,
+		Data:    response,
 	}, c)
 	return
 }

@@ -1,8 +1,10 @@
 package service
 
 import (
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
+	"time"
 )
 
 var DB *gorm.DB
@@ -10,6 +12,13 @@ var DB *gorm.DB
 func InitRoute(db *gorm.DB) *gin.Engine {
 	DB = db
 	router := gin.Default()
+	router.Use(cors.New(cors.Config{
+		AllowMethods:     []string{"GET", "POST", "PUT", "PATCH", "DELETE", "HEAD"},
+		AllowHeaders:     []string{"Origin", "Content-Length", "Content-Type", "Authorization"},
+		AllowAllOrigins:  true,
+		AllowCredentials: true,
+		MaxAge:           12 * time.Hour,
+	}))
 	api := router.Group("/api")
 	{
 		auth := api.Group("/auth")
@@ -23,6 +32,7 @@ func InitRoute(db *gorm.DB) *gin.Engine {
 			doctor := res.Group("/doctor")
 			{
 				doctor.GET("/", GetDoctorAppointments)
+				doctor.GET("/:id", GetDetailDoctorAppointments)
 				doctor.POST("/", AddDoctorAppointment)
 				doctor.PATCH("/:id", EditDoctorAppointment)
 				doctor.DELETE("/:id", DeleteDoctorAppointment)

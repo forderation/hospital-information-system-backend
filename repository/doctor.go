@@ -18,6 +18,11 @@ func GetDoctor(dbc *gorm.DB, doctorGet *db.DoctorAppointment) (doctors []db.Doct
 	return
 }
 
+func GetDetailDoctor(dbc *gorm.DB, doctorGet *db.DoctorAppointment) (doctors []db.DoctorAppointment, err error) {
+	err = dbc.Preload("Registrants.User").Where(&doctorGet).Find(&doctors).Error
+	return
+}
+
 func GetDoctorsById(dbc *gorm.DB, ids []uint) (doctors []db.DoctorAppointment, err error) {
 	err = dbc.Preload("Registrants").Find(&doctors, ids).Error
 	return
